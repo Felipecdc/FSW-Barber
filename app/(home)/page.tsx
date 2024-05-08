@@ -1,9 +1,9 @@
-import About from "./about.page";
+import Header from "../_components/header";
 
 export default function Home() {
   return (
     <div>
-      <About />
+      <Header />
     </div>
   );
 }
