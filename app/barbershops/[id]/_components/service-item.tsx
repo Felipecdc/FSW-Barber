@@ -21,6 +21,8 @@ import { format, formatISO, setMinutes } from "date-fns";
 import { saveBooking } from "../actions/save-booking";
 import { setHours } from "date-fns";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface ServiceItemProps {
   barbershop: Barbershop;
@@ -34,10 +36,12 @@ const ServiceItem = ({
   barbershop,
 }: ServiceItemProps) => {
   const { data } = useSession();
+  const router = useRouter();
 
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
   const [submitIsLoading, setSubmitIsLoading] = useState(false);
+  const [sheetIsOpen, setSheetIsOpen] = useState(false);
 
   const timeList = useMemo(() => {
     return date ? generateDayTimeList(date) : [];
@@ -47,6 +51,8 @@ const ServiceItem = ({
     if (!isAuthenticated) {
       return signIn("google");
     }
+    setDate(undefined);
+    setHour(undefined);
   };
 
   const handleBookingSubmit = async () => {
@@ -66,11 +72,23 @@ const ServiceItem = ({
         date: formatISO(newDate),
         userId: (data.user as any).id,
       });
+
+      setSheetIsOpen(false);
+      toast("Reserva realizada com sucesso!", {
+        description: format(newDate, "'Para' dd 'de' MMMM 'As' HH':'mm.'", {
+          locale: ptBR,
+        }),
+        action: {
+          label: "Visualizar",
+          onClick: () => router.push("/bookings"),
+        },
+      });
     } catch (error) {
       console.log(error);
     } finally {
       setSubmitIsLoading(false);
       setDate(undefined);
+      setHour(undefined);
     }
   };
 
@@ -106,7 +124,7 @@ const ServiceItem = ({
                   currency: "BRL",
                 }).format(Number(service.price))}
               </p>
-              <Sheet>
+              <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
                 <SheetTrigger asChild>
                   <Button variant={"secondary"} onClick={handleBookingClick}>
                     Reservar
