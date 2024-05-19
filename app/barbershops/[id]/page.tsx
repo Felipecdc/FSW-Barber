@@ -1,13 +1,4 @@
-import { Button } from "@/app/_components/ui/button";
 import { db } from "@/app/_lib/prisma";
-import {
-  ChevronLeftIcon,
-  MapPin,
-  MapPinIcon,
-  MenuIcon,
-  StarIcon,
-} from "lucide-react";
-import Image from "next/image";
 import BarbershopInfo from "./_components/barbershop-info";
 import ServiceItem from "./_components/service-item";
 import { getServerSession } from "next-auth";
@@ -48,6 +39,7 @@ const BarbershopDetailsPage = async ({
         {barbershops.services.map((service) => (
           <ServiceItem
             key={service.id}
+            barbershop={barbershops}
             service={service}
             isAuthenticated={!!session?.user}
           />
