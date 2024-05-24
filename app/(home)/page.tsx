@@ -14,6 +14,7 @@ export default async function Home() {
 
   const [barbershop, confirmedBookings] = await Promise.all([
     db.barbershop.findMany({}),
+
     session?.user
       ? db.booking.findMany({
           where: {
